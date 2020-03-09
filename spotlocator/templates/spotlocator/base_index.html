@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Mirrored from slidesigma.com/themes/html/munchbox/homepage-2.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 22 Dec 2019 17:12:13 GMT -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="keywords" content="#">
+    <meta name="description" content="#">
+    <title>Customers Dashboard</title>
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="#">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="#">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="#">
+    <link rel="apple-touch-icon-precomposed" href="#">
+    <link rel="shortcut icon" href="#">
+    <!-- Bootstrap -->
+    <link href="{% static 'spotlocator/assets/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Fontawesome -->
+    <link href="{% static 'spotlocator/assets/css/font-awesome.css' %}" rel="stylesheet">
+    <!-- Flaticons -->
+    <link href="{% static 'spotlocator/assets/css/font/flaticon.css' %}" rel="stylesheet">
+    <!-- Swiper Slider -->
+    <link href="{% static 'spotlocator/assets/css/swiper.min.css' %}" rel="stylesheet">
+    <!-- Range Slider -->
+    <link href="{% static 'spotlocator/assets/css/ion.rangeSlider.min.css' %}" rel="stylesheet">
+    <!-- magnific popup -->
+    <link href="{% static 'spotlocator/assets/css/magnific-popup.css' %}" rel="stylesheet">
+    <!-- Nice Select -->
+    <link href="{% static 'spotlocator/assets/css/nice-select.css' %}" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link href="{% static 'spotlocator/assets/css/style.css' %}" rel="stylesheet">
+    <!-- Custom Responsive -->
+    <link href="{% static 'spotlocator/assets/css/responsive.css' %}" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&amp;display=swap" rel="stylesheet">
+    <!-- place -->
+    <style>
+{#      header styles will be placed here...#}
+        .img-identity{
+            height: 200px;
+            width: 280px;
+        }
+        .rounded-circle{
+            height: 30px;
+            width: 30px;
+        }
+        h6{
+            font-family: Consolas;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'spotlocator/navigation.html' %}
+    <!---Start of slider--->
+    <section class="banner-1 p-relative">
+        <img src="{% static 'spotlocator/assets/img/banner/banner-3.jpg' %}" class="img-fluid full-width" alt="Banner">
+        <div class="transform-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <form method="GET" action="{% url 'index' %}">
+                            {% csrf_token %}
+                            <div class="content-wrapper bg-white padding-20">
+                                <div class="content-box padding-tb-10">
+                                    <h2 class="text-light-black fw-700">Find Akure City SharwamaSpots near and Connect Online for free.</h2>
+                                    <label class="text-light-black fw-700">Find a location near you</label>
+                                    <div class="input-group row">
+                                        <div class="input-group2 col-xl-8">
+                                            <input type="text" name="q" class="form-control form-control-submit" placeholder="Enter street address or zip code" value="{{ request.GET.q }}">
+                                            <div class="input-group-prepend">
+                                                <button class="input-group-text text-light-green"><i class="fab fa-telegram-plane"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="input-group-append col-xl-4">
+                                            <button class="btn-second btn-submit full-width" type="submit">Locate Spots</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay overlay-bg"></div>
+    </section>
+     <!-- Browse by category -->
+     <!-- Browse by category -->
+     <!-- your previous order -->
+     <!-- your previous order -->
+
+   <!-- Explore collection -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mt-3 alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% block body %}
+        <!--the  body content is include here-->
+    {% endblock %}
+
+
+
+    <!-- Explore collection -->
+    <!-- footer -->
+    {% include 'spotlocator/footer.html' %}

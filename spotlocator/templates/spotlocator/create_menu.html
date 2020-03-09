@@ -1,0 +1,120 @@
+{% extends 'spotlocator/base_owner.html' %}
+{% load static %}
+{% load humanize %}
+{% block body %}
+    <section class="ex-collection section-padding bg-light-theme">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    {% include 'spotlocator/logo_details.html' %}
+                </div>
+                <div class="col-md-7">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="login-sec">
+                          <div class="login-box">
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                              <h4 class="text-light-black fw-600 text-center"><strong>Create MenuList </h4><hr>
+                              <div class="row">
+                                <div class="col-12">
+                                  <div class="form-group">
+                                    <label for="{{ form.order_name.id_for_label }}" class="text-light-white fs-14">Order name</label>
+                                    {{ form.order_name }}
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="{{ form.order_price.id_for_label }}" class="text-light-white fs-14">Order Price</label>
+                                    {{ form.order_price }}
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="{{ form.content.id_for_label }}" class="text-light-white fs-14">Order Contents</label>
+                                    {{ form.content }}
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="{{ form.excludes.id_for_label }}" class="text-light-white fs-14">Order Excludes</label>
+                                    {{ form.excludes }}
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="{{ form.order_upload.id_for_label }}" class="text-light-white fs-14">Order Upload</label>
+                                    {{ form.order_upload }}
+                                  </div>
+                                  <div class="form-group">
+                                    <button type="submit" class="btn-second btn-submit full-width">
+                                        <img src="{% static 'spotlocator/assets/img/M.png' %}" alt="btn logo"><strong>Submit Menu</strong>
+                                    </button>
+                                  </div>
+
+                                </div>
+                              </div>
+                            </form>
+
+                               <button type="button" class="btn-second btn-submit full-width"
+                            data-toggle="modal" data-target="#exampleModalLong">
+                              <img src="{% static 'spotlocator/assets/img/M.png' %}" alt="btn logo"><strong>View Menulist</strong>
+                            </button>
+                              <!--Modal view here-->
+                                  <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">
+                                                    <img src="{{ user.logo.url }}" class="rounded-circle" alt="userimg"> <span>{{ user.spotname }} Menu<i>list</i></span>
+                                                </h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                        <!--table for displaying menulist info>-->
+
+                                                <div class="table-responsive-sm">
+                                                    <table class="table table-striped">
+                                                        <thead class="thead-dark">
+                                                            <tr>
+                                                                <th><strong>Order Name</strong></th>
+                                                                <th><strong>Order Price</strong></th>
+                                                                <th><strong>Ingredients Included</strong></th>
+                                                                <th><strong>Ingredients Excluded</strong></th>
+    {#                                                                      <th><strong>Order Pics</strong></th>#}
+                                                            </tr>
+                                                        </thead>
+                                                          <!--closing of the head tag--->
+                                                        <tbody>
+                                                            {% if menus %}
+                                                                {% for menu in menus %}
+                                                                    <tr class="table-light text-uppercase">
+                                                                        <td><i>{{ menu.order_name }}</i></td>
+                                                                        <td>&#8358;{{ menu.order_price|intcomma }}</td>
+                                                                        <td><i>{{ menu.content }}</i></td>
+                                                                        <td><i>{{ menu.excludes }}</i></td>
+    {#                                                                              <td><i>{{ menu.order_upload}}</i></td>#}
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </tbody>
+                                                    </table>
+
+                                                    <div class="footer mt-5 mb-1" style="float: right;">
+                                                        <a href="{% url 'create-menu' %}" type="button" class="btn btn-primary" data-dismiss="modal">Add More</a>
+                                                            {# spot owners should be able to remove a particular menu... #}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                              <!--End of the Menulist modal view class-->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+        <!-- footer -->
+

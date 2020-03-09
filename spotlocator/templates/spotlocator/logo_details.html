@@ -1,0 +1,12 @@
+{% load static %}
+<div class="card">
+    <img src="{{ user.logo.url }}" class="img-top" alt="Profile Image">
+    <div class="card-body">
+        <h5 class="card-title">{{ user.spotname }}</h5>
+        <a href="#" class="btn btn-outline-success" data-toggle="tooltip"
+           data-placement="bottom" title="view your profile in modal view">View</a>
+        <a href="#" class="btn btn-outline-info">Edit</a>
+    </div>
+</div>
+
+

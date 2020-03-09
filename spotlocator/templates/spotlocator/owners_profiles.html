@@ -1,0 +1,180 @@
+{% extends 'spotlocator/base_owner.html' %}
+{% load static %}
+{% block body %}
+    <!--Profile Data's --->
+    <section class="ex-collection section-padding bg-light-theme">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    {% include 'spotlocator/logo_details.html' %}
+                </div>
+                <div class="col-md-7">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="login-sec">
+                          <div class="login-box">
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <h4 class="text-light-black fw-600 text-center"><strong>{{ user.spotname }} Profile</strong></h4><hr>
+                              <div class="row">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <!--the first input-->
+                                            <div class="form-group">
+                                                <label for="{{ form.email.id_for_label }}" class="text-light-white fs-14">Spot Email </label>
+                                                {{ form.email }}
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="{{ form.number.id_for_label }}" class="text-light-white fs-14">Spot Contact No</label>
+                                                {{ form.number }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--The second subset row-->
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <!--the first input-->
+                                            <div class="form-group">
+                                                <label for="{{ form.spotname.id_for_label }}" class="text-light-white fs-14">Spot Name</label>
+                                                {{ form.spotname }}
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="{{ form.address.id_for_label }}" class="text-light-white fs-14">Spot Address</label>
+                                                {{ form.address }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--The 3rd subset row-->
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <!--the first input-->
+                                            <div class="form-group">
+                                                <label for="{{ form.city.id_for_label }}" class="text-light-white fs-14">Spot City</label>
+                                                {{ form.city }}
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="{{ form.state.id_for_label }}" class="text-light-white fs-14">Spot State</label>
+                                                {{ form.state }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <!--the first input-->
+                                            <div class="form-group">
+                                                <label for="{{ form.recovery_email.id_for_label }}" class="text-light-white fs-14">Recovery Email</label>
+                                                {{ form.recovery_email }}
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="{{ form.recovery_phone.id_for_label }}" class="text-light-white fs-14">Recovery Phone No</label>
+                                                {{ form.recovery_phone }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                  <div class="form-group">
+                                    <label for="{{ form.instagram_handle.id_for_label }}" class="text-light-white fs-14">Instagram<i>Handle</i> </label>
+                                    {{ form.instagram_handle }}
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="{{ form.logo.id_for_label }}" class="text-light-white fs-14">Spot LogoPics</label>
+                                    {{ form.logo }}
+                                  </div>
+                                  <div class="form-group">
+                                    <button type="submit" class="btn-second btn-submit full-width">
+                                        <img src="{% static 'spotlocator/assets/img/M.png' %}" alt="btn logo"><strong>Update Profile</strong>
+                                    </button>
+                                  </div>
+
+                                </div>
+                              </div>
+                            </form>
+                            <button type="button" class="btn-second btn-submit full-width"
+                            data-toggle="modal" data-target="#exampleModalLong">
+                              <img src="{% static 'spotlocator/assets/img/M.png' %}" alt="btn logo"><strong>View Profile</strong>
+                            </button>
+                              <!--Modal view here-->
+                                  <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                                    <div class="modal-dialog modal-md" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">
+                                                    <img src="{{ user.logo.url }}" class="rounded-circle" alt="userimg"> <span>{{ user.spotname }} Profile</span>
+                                                </h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                        <!--the profile will display here
+                                                        the design will be change soon enough-->
+                                                <div class="container">
+                                                    <input type="text" class="form-control form-control-submit" value="{{ user.spotname }}"><br>
+                                                    <input type="text" class="form-control form-control-submit" value="{{ user.email }}"><br>
+                                                    <input type="text" class="form-control form-control-submit" value="{{ user.number }}"><br>
+                                                    <input type="text" class="form-control form-control-submit" value="{{ user.address }}"><br>
+                                                    <input type="text" class="form-control form-control-submit" value="{{ user.city }}"><br>
+                                                    <input type="text" class="form-control form-control-submit" value="{{ user.state }}"><br>
+                                                    <input type="text" class="form-control form-control-submit" value="{{ user.recovery_email }}"><br>
+                                                    <input type="text" class="form-control form-control-submit" value="{{ user.recovery_phone }}"><br>
+                                                    <input type="text" class="form-control form-control-submit" value="{{ user.instagram_handle }}">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Edit Profile</button>
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Thanks</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                </div>
+                <div class="col-md-1">
+                    <!--preserved content-->
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+
+
+<!--button trigger modal--
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
+    Launch demo modal
+</button>
+<!--Modal--
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+                <div class="modal-body">
+                    <!--the profile will display here --
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Exit</button>
+                    <button type="button" class="btn btn-primary">Save Changes</button>
+                </div>
+        </div>
+    </div>
+</div>-->
+

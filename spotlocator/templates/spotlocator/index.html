@@ -1,0 +1,222 @@
+{% extends 'spotlocator/base_index.html' %}
+{% load humanize %}
+{% load static %}
+{% block body %}
+    <div class="container">
+        <div class="blockquote mt-2" style="border-radius: 5px;
+                                border: 1px solid #eee;
+                                padding: 12px; ">
+            <h3 style="font-family: Consolas; font-weight: 100;">Important Notice</h3>
+            <h6>Create an account with us to have access to the spot owner <i>WHATSAPP</i>
+                and <i>CALL</i> user interface</h6>
+            <a href="{% url 'register' %}" class="btn btn-outline-success">Create account here</a>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-header-left mt-2">
+                    <h3 class="text-light-black header-title title" style="font-family: 'Adventure Subtitles' ; margin: 0 auto;display: table">
+                        Connect with your favorite SharwamaSpot</h3>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="row">
+                    {% if spotowners %}
+                        {% for owners in spotowners %}
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                <div class="product-box mb-xl-20">
+                                    <div class="product-img">
+                                        <a href="#">
+                                            {% if owners.logo is not None %}
+                                                <img src="{{ owners.logo.url }}"
+                                                     class="img-thumbnail" alt="product-img">
+                                            {% else %}
+                                                <img src="{% static 'spotlocator/assets/img/dish/150x151/dish-1.jpg' %}"
+                                                     class="img-fluid" alt="product-img">
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                    <div class="product-caption">
+                                        <div class="title-box">
+                                            <h6 class="product-title"><a href="#" class="text-light-black "
+                                                                         style="font-weight: bold;font-size: 17px">
+                                                {{ owners.spotname }}</a>
+                                            </h6>
+{#                                            <div class="tags">#}
+{#                                                <span class="text-custom-white rectangle-tag bg-gradient-green">#}
+{#                                                   &#8358; {{ menu.order_price|intcomma }}#}
+{#                                                </span>#}
+{#                                            </div>#}
+                                        </div>
+                                        <p class="text-light-white"
+                                           style="font-size: 15px">{{ owner.address }}</p>
+                                        <div class="product-details">
+                                            <div class="price-time"><span
+                                                    class="text-light-black time">Delivery time: not specified</span>
+                                            </div>
+                                        </div>
+                                        {% if user.is_authenticated %}
+                                        <div class="product-footer">
+                                            <div style="margin: 0 auto;display: table">
+                                                <a href="https://api.whatsapp.com/send?phone={{ owners.number }}" class="text-white square-tag bg-gradient-green"
+                                                   style="margin-left: 1px;padding: 7px;border-radius: 3px">
+                                                    <i class="fa fa-phone-square"
+                                                       style="color: #ffffff;"></i> WHATSAPP
+                                                </a>
+                                                <a href="tel:+234{{ owners.number }}"
+                                                   class="text-custom-white square-tag bg-gradient-orange"
+                                                   style="border-radius: 3px;margin-left: 1px;padding: 7px">
+                                                    <i class="fa fa-phone text-white"
+                                                       style=""></i> CALL
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {# start of jumbotron for sharwama displays   #}
+    <div class="jumbotron">
+        <div class="row">
+            <div class="container">
+               <div class="col-md-6 offset-md-3">
+                    <div class="text-center">
+                        <form method="GET" action="{% url 'index' %}">
+                            {% csrf_token %}
+                            <h2>Explore and search for your favorite<br>
+                            Sharwama collections here</h2>
+                            <label class="text-light-black fw-700">Find a specific sharwama type near you</label>
+                            <div class="input-group row">
+                                <div class="input-group2 col-md-12 ">
+                                    <input type="text" name="query" class="form-control form-control-submit" placeholder="e.g chicken double" value="{{ request.GET.query }}">
+                                </div>
+{#                                <div class="input-group col-md-2">#}
+{#                                  <button type="submit" class="btn btn-danger"><i class="fas fa-search"></i></button>#}
+{#                                </div>#}
+                            </div>
+                        </form>
+                    </div>
+               </div>
+            </div>
+        </div><br>
+                <br>
+                    <br>
+    {# the next div class is for outputing the sharwama product itself      #}
+        <div class="container">
+            <div class="row">
+                    {% if menus %}
+                        {% for menu in menus %}
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                <div class="product-box mb-xl-20">
+                                    <div class="product-img">
+                                    <!--Changing the image to modal on hover-->
+                                        <a href="#" data-toggle="modal" data-target="#displayModal" >
+                                            {% if menu.order_upload is not None %}
+                                                <img src="{{ menu.order_upload.url }}"
+                                                     class="img-identity full-width" alt="product-img">
+                                            {% else %}
+                                                <img src="{% static 'spotlocator/assets/img/dish/150x151/dish-1.jpg' %}"
+                                                     class="img-identity full-width" alt="product-img">
+                                            {% endif %}
+                                        </a>
+                                    <!--the Start of modal class-->
+{#                                   <!--Modal view here-->#}
+
+                                      <div class="modal fade" id="displayModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                                        <div class="modal-dialog modal-md" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLongTitle">
+                                                        Contents Included
+                                                    </h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                     <ul class="text-black-200">
+                                                         <li>{{ menu.content}}</li>
+                                                     </ul>
+                                                    <!--table for displaying menulist info-->
+                                                </div>
+                                            </div>
+                                        </div>
+                                      </div>
+                                    <!--The end of modal class-->
+                                    </div>
+                                    <div class="product-caption">
+                                        <div class="title-box">
+                                            <h6 class="product-title"><a href="#" class="text-light-black "
+                                                                         style="font-weight: bold;font-size: 17px"> {{ menu.order_name }}</a>
+                                            </h6>
+                                        </div>
+
+                                        <p class="text-light-white"
+                                           style="font-size: 15px">{{ menu.owner.spotname }}</p>
+                                        <div class="product-details">
+                                            <div class="price-time"><span
+                                                    class="text-light-black time">Delivery time: not specified</span>
+                                            </div>
+                                        </div>
+                                        <div class="tags">
+                                                <span class="text-custom-white rectangle-tag bg-gradient-green">
+                                                   &#8358; {{ menu.order_price|intcomma }}
+                                                </span>
+                                        </div>
+                                        {% if user.is_authenticated %}
+                                        <div class="product-footer">
+                                            <div style="margin: 0 auto;display: table">
+                                                <a href="https://api.whatsapp.com/send?phone={{ menu.owner.number }}" class="text-white square-tag bg-gradient-green"
+                                                   style="margin-left: 1px;padding: 7px;border-radius: 3px">
+                                                    <i class="fa fa-phone-square"
+                                                       style="color: #ffffff;"></i> WHATSAPP
+                                                </a>
+                                                <a href="tel:+234{{ menu.owner.number }}"
+                                                   class="text-custom-white square-tag bg-gradient-orange"
+                                                   style="border-radius: 3px;margin-left: 1px;padding: 7px">
+                                                    <i class="fa fa-phone text-white"
+                                                       style=""></i> CALL
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+        </div>
+    </div>
+{% endblock %}
+
+{#{% if is_paginated %}#}
+{##}
+{#      {% if page_obj.has_previous %}#}
+{#        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>#}
+{#        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>#}
+{#      {% endif %}#}
+{##}
+{#      {% for num in page_obj.paginator.page_range %}#}
+{#        {% if page_obj.number == num %}#}
+{#          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>#}
+{#        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}#}
+{#          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>#}
+{#        {% endif %}#}
+{#      {% endfor %}#}
+{##}
+{#      {% if page_obj.has_next %}#}
+{#        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>#}
+{#        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>#}
+{#      {% endif %}#}
+{##}
+{#    {% endif %}#}
