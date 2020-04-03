@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from spotlocator.models import MenuList
+from spotlocator.models import MenuList, Newsletter
 
 User = get_user_model()
 
@@ -25,10 +25,6 @@ class OwnerProfileForm(forms.ModelForm):
 
         }
 
-    def clean(self):
-        # extra form-data validation logic will be here
-        pass
-
 
 class MenuCreateForm(forms.ModelForm):
 
@@ -47,6 +43,13 @@ class MenuCreateForm(forms.ModelForm):
         }
 
 
-    def clean(self):
-        # extra form-data validation logic will be here.
-        pass
+class SubscriptionForm(forms.Form):
+    sub_email = forms.EmailField()
+
+
+
+
+
+
+
+

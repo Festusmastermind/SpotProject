@@ -2,8 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.crypto import get_random_string
 from django.conf import settings
-from django.urls import reverse
-from PIL import Image
+
 
 
 # Create your models here.
@@ -33,8 +32,6 @@ def format_phone_number(number):
 
 
 class User(AbstractUser):
-    # inheriting from a predefined abstract user class...
-    # email_status = models.CharField(max_length=20, default='unverified')
     type_choices = (
         ('1', 'customer'),
         ('2', 'spotowner'),
@@ -62,21 +59,17 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
-    def save(self, *args, **kwargs):
-        # generating a username before the when the user is created
-        self.username = unique_generator(User, 'username')
-        super(User, self).save(*args, **kwargs)
 
     def delete(self, **kwargs):
         pass
         super(User, self).delete(**kwargs)
 
-        img = Image.open(self.logo.path)
+    def save(self, *args, **kwargs):
+        # generate a username and save into the DB
+        self.username = unique_generator(User, 'username')
+        super(User, self).save(*args, **kwargs)
 
-        if img.height <= 300 or img.width > 300:
-            output_size = (300, 300)
-            img.thumbnail(output_size)
-            img.save(self.logo.path)
+
 
 class MenuList(models.Model):
     order_choices = (
@@ -97,22 +90,39 @@ class MenuList(models.Model):
 
     def __str__(self):
         return f'{self.owner.spotname}' +" "+ f'{self.order_name}'
-        #return self.order_name
-
 
     def get_content(self):
         return self.content.split(",")
 
     def get_exlcudes(self):
         return self.excludes.split(",")
-    #
-    # def get_absolute_url(self):
-    #     return reverse('create-menu', kwargs={'menu_id': self.pk})
+
+   # A method to reduce the size of the images...
+
+
+class Newsletter(models.Model):
+    sub_email = models.EmailField(blank=True, null=True)
+
+
+    def __str__(self):
+        return self.sub_email
 
 
 
 
-# class Profile(models.Model):
+
+
+
+
+
+
+
+
+
+
+
+
+            # class Profile(models.Model):
 #     user             = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 #     city             = models.CharField(max_length=100, blank=True, null=True)
 #     state            = models.CharField(max_length=100, blank=True, null=True)

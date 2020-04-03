@@ -44,9 +44,17 @@
             height: 200px;
             width: 280px;
         }
-        .rounded-circle{
+        .img-thumbnail{
+            height: 200px;
+            width: 280px;
+        }
+        .nav-img{
             height: 30px;
             width: 30px;
+        }
+        .upload-img{
+            height: 160px;
+            width: 160px;
         }
         h6{
             font-family: Consolas;
@@ -55,7 +63,7 @@
 </head>
 
 <body>
-    {% include 'spotlocator/navigation.html' %}
+    {% include 'spotlocator/Includes/navigation.html' %}
     <!---Start of slider--->
     <section class="banner-1 p-relative">
         <img src="{% static 'spotlocator/assets/img/banner/banner-3.jpg' %}" class="img-fluid full-width" alt="Banner">
@@ -112,8 +120,6 @@
         <!--the  body content is include here-->
     {% endblock %}
 
-
-
     <!-- Explore collection -->
     <!-- footer -->
-    {% include 'spotlocator/footer.html' %}
+    {% include 'spotlocator/Includes/footer.html' %}

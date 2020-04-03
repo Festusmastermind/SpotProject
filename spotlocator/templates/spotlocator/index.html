@@ -3,14 +3,26 @@
 {% load static %}
 {% block body %}
     <div class="container">
-        <div class="blockquote mt-2" style="border-radius: 5px;
-                                border: 1px solid #eee;
-                                padding: 12px; ">
-            <h3 style="font-family: Consolas; font-weight: 100;">Important Notice</h3>
-            <h6>Create an account with us to have access to the spot owner <i>WHATSAPP</i>
-                and <i>CALL</i> user interface</h6>
-            <a href="{% url 'register' %}" class="btn btn-outline-success">Create account here</a>
-        </div>
+        {% if user.user_type == '1' %}
+            <div class="blockquote mt-2" style="background-color: lavender; border-radius: 5px; border: 1px solid #eee; padding: 6px; ">
+                <h4 class="text-center">Welcome {{ user.first_name }}, We have your best interest in mind</h4>
+            </div>
+        {% elif user.user_type == '2' %}
+            <div class="blockquote mt-2" style="border-radius: 5px; border: 1px solid #eee; padding: 12px; ">
+                <h4 class="text-center">Welcome {{ user.spotname }}, Browse other activities here!!
+                    <small><a href="{% url 'owners_profile' %}">Visit your page</a></small>
+                </h4>
+            </div>
+        {% else %}
+            <div class="blockquote mt-2" style="border-radius: 5px;
+                                    border: 1px solid #eee;
+                                    padding: 12px; ">
+                <h3 style="font-family: Consolas; font-weight: 100;">Important Notice</h3>
+                <h6>Create an account with us to have access to the spot owner <i>WHATSAPP</i>
+                    and <i>CALL</i> user interface</h6>
+                <a href="{% url 'register' %}" class="btn btn-outline-success">Create account here</a>
+            </div>
+        {% endif %}
         <div class="row">
             <div class="col-md-12">
                 <div class="section-header-left mt-2">
@@ -33,7 +45,7 @@
                                                      class="img-thumbnail" alt="product-img">
                                             {% else %}
                                                 <img src="{% static 'spotlocator/assets/img/dish/150x151/dish-1.jpg' %}"
-                                                     class="img-fluid" alt="product-img">
+                                                     class="img-thumbnail" alt="product-img">
                                             {% endif %}
                                         </a>
                                     </div>
@@ -49,8 +61,9 @@
 {#                                                </span>#}
 {#                                            </div>#}
                                         </div>
-                                        <p class="text-light-white"
-                                           style="font-size: 15px">{{ owner.address }}</p>
+                                        <p class="text-dark"
+                                           style="font-size: 15px"><i class="fa fa-map-marker"></i>
+                                            {{ owners.address }}</p>
                                         <div class="product-details">
                                             <div class="price-time"><span
                                                     class="text-light-black time">Delivery time: not specified</span>
@@ -79,6 +92,24 @@
                         {% endfor %}
                     {% endif %}
                 </div>
+             <!--A user pagination will place here -->
+                 {% if spotowners.has_other_pages %}
+                    {% if spotowners.has_previous %}
+                        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                        <a class="btn btn-outline-info mb-4" href="?page={{ spotowners.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    {% for num in spotowners.paginator.page_range %}
+                        {% if spotowners.number == num %}
+                          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                        {% elif num > spotowners.number|add:'-3' and num < spotowners.number|add:'3' %}
+                          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if spotowners.has_next %}
+                        <a class="btn btn-outline-info mb-4" href="?page={{ spotowners.next_page_number }}">Next</a>
+                        <a class="btn btn-outline-info mb-4" href="?page={{ spotowners.paginator.num_pages }}">Last</a>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>
@@ -105,30 +136,32 @@
                     </div>
                </div>
             </div>
-        </div><br>
+        </div>
+        <br>
+            <br>
                 <br>
-                    <br>
     {# the next div class is for outputing the sharwama product itself      #}
         <div class="container">
             <div class="row">
-                    {% if menus %}
-                        {% for menu in menus %}
-                            <div class="col-lg-3 col-md-3 col-sm-3">
+                    {% if menulist %}
+                        {% for menu in menulist %}
+                            <!--<div class="col-lg-3 col-md-3 col-sm-3">-->
+                            <div class="col-md-3">
+                        <!--The image will be here-->
+                            <!---the formal design of the sharwama produce-->
                                 <div class="product-box mb-xl-20">
                                     <div class="product-img">
                                     <!--Changing the image to modal on hover-->
                                         <a href="#" data-toggle="modal" data-target="#displayModal" >
                                             {% if menu.order_upload is not None %}
                                                 <img src="{{ menu.order_upload.url }}"
-                                                     class="img-identity full-width" alt="product-img">
+                                                     class="img-identity" alt="product-img">
                                             {% else %}
                                                 <img src="{% static 'spotlocator/assets/img/dish/150x151/dish-1.jpg' %}"
-                                                     class="img-identity full-width" alt="product-img">
+                                                     class="img-identity" alt="product-img">
                                             {% endif %}
                                         </a>
                                     <!--the Start of modal class-->
-{#                                   <!--Modal view here-->#}
-
                                       <div class="modal fade" id="displayModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                                         <div class="modal-dialog modal-md" role="document">
                                             <div class="modal-content">
@@ -143,7 +176,7 @@
 
                                                 <div class="modal-body">
                                                      <ul class="text-black-200">
-                                                         <li>{{ menu.content}}</li>
+                                                         {{ menu.content}}
                                                      </ul>
                                                     <!--table for displaying menulist info-->
                                                 </div>
@@ -155,12 +188,16 @@
                                     <div class="product-caption">
                                         <div class="title-box">
                                             <h6 class="product-title"><a href="#" class="text-light-black "
-                                                                         style="font-weight: bold;font-size: 17px"> {{ menu.order_name }}</a>
+                                                                         style="font-weight: bold;font-size: 17px">
+                                                                        {{ menu.order_name }}</a>
                                             </h6>
                                         </div>
 
                                         <p class="text-light-white"
                                            style="font-size: 15px">{{ menu.owner.spotname }}</p>
+                                        <p class="text-light-white"
+                                           style="font-size: 15px">{{ menu.content }}</p>
+
                                         <div class="product-details">
                                             <div class="price-time"><span
                                                     class="text-light-black time">Delivery time: not specified</span>
@@ -190,33 +227,125 @@
                                         {% endif %}
                                     </div>
                                 </div>
-
                             </div>
                         {% endfor %}
                     {% endif %}
-                </div>
+            </div>
+            {% if menulist.has_other_pages %}
+                {% if menulist.has_previous %}
+                    <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                    <a class="btn btn-outline-info mb-4" href="?page={{ menulist.previous_page_number }}">Previous</a>
+                {% endif %}
+                {% for num in menulist.paginator.page_range %}
+                    {% if menulist.number == num %}
+                      <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% elif num > menulist.number|add:'-3' and num < menulist.number|add:'3' %}
+                      <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if menulist.has_next %}
+                    <a class="btn btn-outline-info mb-4" href="?page={{ menulist.next_page_number }}">Next</a>
+                    <a class="btn btn-outline-info mb-4" href="?page={{ menulist.paginator.num_pages }}">Last</a>
+                {% endif %}
+            {% endif %}
         </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow p-3 mb-5 bg-white rounded ">
+                    <div class="card-body text-center">
+                        <span><i class="fa fa-address-book fa-2x"></i></span>
+                        <h4 class="text-dark">Create an Account with us today and enjoy our services</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow p-3 mb-5 bg-white rounded ">
+                    <div class="card-body text-center">
+                        <i class="fa fa-map-marker fa-2x"></i>
+                        <h4 class="text-dark">Locate the nearest sharwama spot closiest to you </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow p-3 mb-5 bg-white rounded ">
+                    <div class="card-body text-center">
+                        <span class="fab fa-whatsapp-square fa-2x"></span>
+                        <h4 class="text-dark">click the <mark><i>whatsapp</i></mark> button and connect with your favorite</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 {% endblock %}
 
-{#{% if is_paginated %}#}
-{##}
-{#      {% if page_obj.has_previous %}#}
-{#        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>#}
-{#        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>#}
-{#      {% endif %}#}
-{##}
-{#      {% for num in page_obj.paginator.page_range %}#}
-{#        {% if page_obj.number == num %}#}
-{#          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>#}
-{#        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}#}
-{#          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>#}
+
+
+
+
+
+
+{#    Even the guide implementation is not working ..    #}
+{#<div class="pagination">#}
+{#    <span class="step-links">#}
+{#        {% if menuPaginate.has_previous %}#}
+{#            <a href="?page={{ menuPaginate.previous_page_number }}">previous</a>#}
 {#        {% endif %}#}
-{#      {% endfor %}#}
 {##}
-{#      {% if page_obj.has_next %}#}
-{#        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>#}
-{#        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>#}
-{#      {% endif %}#}
+{#        <span class="current">#}
+{#            Page {{ menuPaginate.number }} of {{ menuPaginate.paginator.num_pages }}.#}
+{#        </span>#}
 {##}
-{#    {% endif %}#}
+{#        {% if menuPaginate.has_next %}#}
+{#            <a href="?page={{ menuPaginate.next_page_number }}">next</a>#}
+{#        {% endif %}#}
+{#    </span>#}
+{#</div>#}
+        <!---Trying the second option with careful study-->
+{#        {% if menuPaginate.has_other_pages %}#}
+{#            <ul class="pagination">#}
+{#                {% if menuPaginate.has_previous %}#}
+{#                    <li><a href="?page={{ menuPaginate.previous_page_number }}">&laquo;</a></li>#}
+{#                {% else %}#}
+{#                    <li class="disabled"><span>&laquo;</span></li>#}
+{#                {% endif %}#}
+{#                {% for i in menuPaginate.paginator.page_range %}#}
+{#                    {% if menuPaginate.number == i %}#}
+{#                        <li class="active"><span>{{ i }}<span class="sr-only">(current)</span></span></li>#}
+{#                    {% else %}#}
+{#                        <li><a href="?page={{ i }}">{{ i }}</a></li>#}
+{#                    {% endif %}#}
+{#                {% endfor %}#}
+{#                {% if menuPaginate.has_next %}#}
+{#                    <li><a href="?page={{ menuPaginate.next_page_number }}">&raquo;</a></li>#}
+{#                {% else %}#}
+{#                    <li class="disabled"><span>&raquo;</span></li>#}
+{#                {% endif %}#}
+{#            </ul>#}
+{#        {% endif %}#}
+
+{#<article class="media content-section mb-2"#}
+{#     style="float: left;#}
+{#     background: #ffffff;#}
+{#     padding: 10px 20px;#}
+{#     border: 1px solid #dddddd;#}
+{#     border-radius: 3px;#}
+{#     margin-bottom: 20px;">#}
+{#{% if menu.order_upload is not None %}#}
+{#    <img src="{{ menu.order_upload.url }}"#}
+{#         class="img-thumbnail upload-img" alt="product-img">#}
+{#{% else %}#}
+{#    <img src="{% static 'spotlocator/assets/img/dish/150x151/dish-1.jpg' %}"#}
+{#         class="img-thumbnail upload-img" alt="product-img">#}
+{#{% endif %}#}
+{#<div class="media-body">#}
+{#    <div class="article-data ml-2 mt-2">#}
+{#        <p>{{ menu.order_name }}</p>#}
+{#        <p>&#8358; {{ menu.order_price|intcomma }}</p>#}
+{#        <p>{{ menu.content }}</p>#}
+{##}
+{#    </div>#}
+{#</div>#}
+{#</article>#}

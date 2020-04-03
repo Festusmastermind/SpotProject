@@ -22,15 +22,18 @@
                     {% endif %}
                 </ul>
                {% if user.logo.url %}
-                   <div class="text-left ml-2"><img src="{{ user.logo.url }}" class="rounded-circle" alt="profile_pics"></div>
+                   <div class="text-left"><img src="{{ user.logo.url }}" class="rounded-circle nav-img" alt="profile_pics"></div>
                    {% if user.user_type == '2' %}
                     <span class="text-white">Hi, {{ user.spotname }}</span>
                    {% else%}
                     <span class="text-white">Hi, {{ user.first_name }}</span>
                    {% endif %}
                {% else %}
-                   <span class="text-white ml-2">Welcome</span>
+                   <span class="text-white">Welcome</span>
                {% endif %}
             </div>
         </div>
     </nav>
+
+
+<!--Creating and memorizing a navbar creation-->

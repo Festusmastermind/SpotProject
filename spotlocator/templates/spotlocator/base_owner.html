@@ -39,12 +39,12 @@
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&amp;display=swap" rel="stylesheet">
     <!-- place -->
     <style>
-        .rounded-circle{
+        .logo-img{
             width: 35px;
             height: 35px;
         }
         .img-top{
-            width: 348px;
+            width: 350px;
             height: 300px;
         }
     </style>
@@ -75,14 +75,14 @@
                     {% endif %}
                 </ul>
                {% if user.logo.url %}
-               <div class="text-left ml-2"><img src="{{ user.logo.url }}" class="rounded-circle" alt="profile_pics">
+               <div class="text-left"><img src="{{ user.logo.url }}" class="rounded-circle logo-img" alt="profile_pics">
                    {% if user.user_type == '2' %}
                     <span class="text-white">Hi, {{ user.spotname }}</span>
                    {% else %}
                     <span class="text-white">Hi, {{ user.first_name }}</span>
                    {% endif %}
                {% else %}
-                   <div class="text-left ml-2"><img src="{{ user.logo }}" class="rounded-circle" alt="profile_pics"></div>
+                   <div class="text-left ml-2"><img src="{{ user.logo }}" class="rounded-circle logo-img" alt="profile_pics"></div>
                {% endif %}
                </div>
             </div>
@@ -100,9 +100,19 @@
         {% endif %}
     </div>
 
-    {% block body %}
-        <!--the body goes here-->
-    {% endblock %}
-
+    <section class="ex-collection section-padding bg-light-theme" style="padding-top: 8px;">
+        <div class="container pt-0">
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    {% include 'spotlocator/logo_details.html' %}
+                </div>
+                <div class="col-md-8">
+                    {% block body %}
+                        <!--the body goes here-->
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </section>
 <!--Footer class-->
-    {% include 'spotlocator/footer.html' %}
+    {% include 'spotlocator/Includes/footer.html' %}

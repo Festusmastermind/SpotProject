@@ -1,67 +1,135 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from spotlocator.models import format_phone_number
+from django.conf import settings
+from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
-from spotlocator.models import MenuList
-from spotlocator.forms import OwnerProfileForm, MenuCreateForm
+from spotlocator.models import format_phone_number
+from spotlocator.models import MenuList, Newsletter
+from spotlocator.forms import OwnerProfileForm, MenuCreateForm, SubscriptionForm
 from validate_email import validate_email
 from django.db.models import Q
-
-
+from SpotProject.settings import EMAIL_HOST_USER
 User = get_user_model()
 
-# Functional Views / class based views...
+
 
 def index(request):
-    # handling two search functions simultaneously...
-    if request.method == 'GET':
-        context = {}
-        if request.GET.get('status') == 'P':
-            pass
+    template_name = 'spotlocator/index.html' # global_var
+
+    # menulist pagination
+    menulist_list = MenuList.objects.all().order_by("-order_name")
+    paginator = Paginator(menulist_list, 4)
+    page = request.GET.get('page')
+    try:
+        menulist = paginator.page(page)
+    except PageNotAnInteger:
+        menulist = paginator.page(1)
+    except EmptyPage:
+        menulist = paginator.page(paginator.num_pages)
+
+    # spotowners pagination
+    spotowners_list = User.objects.filter(user_type='2')
+    paginator = Paginator(spotowners_list, 4)
+    page = request.GET.get('page')
+    try:
+        spotowner = paginator.page(page)
+    except PageNotAnInteger:
+        spotowner = paginator.page(1)
+    except EmptyPage:
+        spotowner = paginator.page(paginator.num_pages)
+
+    # receiving the queries
+    query1 = request.GET.get("q")
+    query2 = request.GET.get("query")
+    #Search field for SpotOwners
+    if query1:
+        owners = User.objects.filter(user_type='2')
+        spotowners = owners.filter(Q(state__icontains=query1)|
+                                    Q(city__icontains=query1)|
+                                    Q(address__icontains=query1)).distinct()
+        if spotowners.exists():
+            #paginate_obj(request, spotowner, spotowners)
+            paginator = Paginator(spotowners, 4)
+            page = request.GET.get('page')
+            try:
+                spotowner = paginator.page(page)
+            except PageNotAnInteger:
+                spotowner = paginator.page(1)
+            except EmptyPage:
+                spotowner = paginator.page(paginator.num_pages)
+
+            total_search = spotowners.count()
+            if total_search > 0:
+                messages.success(request, f'We found {total_search} SharwamaSpots near your location')
+                context = {'spotowners': spotowner, 'menulist':menulist}
+                return render(request, template_name, context)
         else:
-            # dont really get the above code ...
-            template_name = 'spotlocator/index.html'
-            menulist = MenuList.objects.all()[:20]
-            spotowners = User.objects.filter(user_type='2')
-            query1 = request.GET.get("q")
-            query2 = request.GET.get("query")
-            # Search field for SpotOwners
-            if query1:
-                owners = User.objects.filter(user_type='2')
-                spotowners = owners.filter(Q(state__icontains=query1)|
-                                            Q(city__icontains=query1)|
-                                            Q(address__icontains=query1)).distinct()
-                if spotowners.exists():
-                    total_search = spotowners.count()
-                    if total_search > 0:
-                        messages.success(request, f'We found {total_search} SharwamaSpots near your location')
-                        menus = menulist
-                        context = {'spotowners': spotowners, 'menus': menus}
-                        return render(request, template_name, context)
-                else:
-                    messages.info(request, f'Ooops!! ...None Found')
-                    menus = menulist
-                    return render(request, template_name, {'menus': menus})
-            # Search field for sharwama only
-            if query2:
-                menulist2 = MenuList.objects.filter(order_name__icontains=query2)
-                if menulist2.exists():
-                    total_count = menulist2.count()
-                    if total_count > 0:
-                        messages.success(request, f'We found {total_count} Sharwama for you...Order Now')
-                        context = {'menus': menulist2, 'spotowners': spotowners}
-                        return render(request, template_name, context)
-                else:
-                    messages.info(request, f'Sharwama Type not found')
-                    return render(request, template_name, {'spotowners': spotowners})
-            context = {
-                'spotowners': spotowners,
-                'menus': menulist
-            }
-            # trying to output the contents of the sharwama
+            messages.info(request, f'Ooops!! ...None Found')
+            return render(request, template_name, {'menulist': menulist})
+    # Search field for sharwama only
+    elif query2:
+        menulist2 = MenuList.objects.filter(order_name__icontains=query2).order_by("-order_name")
+        if menulist2.exists():
+            #paginate_obj(request, menulist, menulist2) # when an item is searched, it retain the pag_object.
+            paginator = Paginator(menulist2, 4)
+            page = request.GET.get('page')
+            try:
+                menulist = paginator.page(page)
+            except PageNotAnInteger:
+                menulist = paginator.page(1)
+            except EmptyPage:
+                menulist = paginator.page(paginator.num_pages)
+            total_count = menulist2.count()
+            if total_count > 0:
+                messages.success(request, f'We found {total_count} Sharwama for you...Order Now')
+            context = {'spotowners': spotowner, 'menulist': menulist}
             return render(request, template_name, context)
+        else:
+            messages.info(request, f'Sharwama Type not found')
+            return render(request, template_name, {'spotowners': spotowner, 'menulist':menulist})
+
+    # handling of the subcription form
+    if request.method == 'POST':
+        context = {'spotowners': spotowner, 'menulist': menulist}
+        email_obj = Newsletter()
+        email = request.POST.get('sub_email')
+        # validating the email
+        if Newsletter.objects.filter(sub_email=email).exists():
+            messages.warning(request, f'This is an already registered email')
+            return render(request, template_name, context)
+        if not validate_email(email):
+            messages.warning(request, f'Email is not Valid')
+            return render(request, template_name, context)
+        email_obj.sub_email = email
+        subject = 'SharwamaLocator Notification'
+        message = 'Explore our rich features to enjoy delicious sharwama' # suppose to be dynamic
+        from_email = EMAIL_HOST_USER
+        recipient_list = email_obj.sub_email
+
+        # sending the mssg
+        send_mail(subject, message, from_email, [recipient_list], fail_silently=False)
+        email_obj.save()
+        messages.success(request, f'Thanks for subscribing to our site')
+    context = {
+        'spotowners': spotowner,
+        'menulist': menulist
+    }
+    return render(request, template_name, context)
+
+# to be debug
+def paginate_obj(request, x, y):
+    paginator = Paginator(y, 4)
+    page = request.GET.get('page')
+    try:
+        x = paginator.page(page)
+    except PageNotAnInteger:
+        x = paginator.page(1)
+    except EmptyPage:
+        x = paginator.page(paginator.num_pages)
+    return x, y
 
 def register(request):
     # if the request is post
@@ -220,15 +288,16 @@ def menu_list(request):
     return render(request, template_name)
 
 
-def menu_delete(request, menu_id):
-    pass
-    # try:
-    #     menu_item = MenuList.objects.get(pk='menu_id')
-    # except:
-    #     menu_item = None
-    # menu_item.delete()
-    # return redirect('menulist')
-
+def delete_menu(request, menu_id):
+    #getting the related set makes sure that only the owner can delete the menu_item...
+    user = request.user
+    if user.user_type != '2':
+        messages.info(request, f'You are not permitted')
+        return redirect('login')
+    current_user = user
+    menus = current_user.menulist_set.get(pk=menu_id)
+    menus.delete()
+    return redirect('menulist')
 
 
 def logout_view(request):
@@ -237,5 +306,69 @@ def logout_view(request):
     return redirect('login')
 
 
+# not using this one for the newsletter
+def subscription_view(request):
+    # using django form to process the form...
+    # plus it will be included inside the index view..
+    template_name = 'spotlocator/index.html'
+    if request.method == 'POST':
+        form = SubscriptionForm(request.POST or None)
+        if form.is_valid():
+            email_obj = form.save(commite=False)
+            email_obj.sub_email = form.cleaned_data_get('sub_email')
+            email_obj.save()
+            # sending the mail
+            subject = 'Horlacode Notification'
+            message = 'Explore our rich features to enjoy awesome satisfaction.'
+            from_email = settings.EMAIL_HOST_USER
+            recipient_list = form.cleaned_data.get('sub_email')
+            # actual sending...
+            send_mail(subject, message, from_email, [recipient_list], fail_silently=False)
+            messages.success(request, 'You have subscribed succesfully')
+            return redirect('index')
+    else:
+        form = SubscriptionForm()
+    return render(request, template_name, {'form': form})
 
+
+
+# custom python function...DRY principle
+
+
+
+# def emailSubscription(request):
+#     template_name = 'spotlocator/index.html'
+#     sub = forms.SubscriptionForm()
+#     if request.method == 'POST':
+#         sub       = forms.SubscriptionForm(request.POST)
+#         subject   = 'Welcome to SharwamaSport Notification'
+#         message   = 'Explore our latest features by signing here..'
+#         recipient = str(sub['sub_email'].value())
+#         send_mail(subject, messages, EMAIL_HOST_USER, [recipient], fail_silently=False)
+#         return render(request, template_name)
+#     return render(request, template_name, {'form': sub})
+
+
+
+
+
+
+
+
+
+
+    # form = SignupForm(request.POST or None)
+    # if form.is_valid():
+    #     save_it = form.save(commit=False)
+    #     save_it.save()
+    #     # send_mail(subject, message, from_email, to_list, fail_silently=True)
+    #     subject = 'Thank you for your Pre-Order from CFE'
+    #     message = 'Welcome to CFE! We very much appreciate your business./n'
+    #     from_email = settings.EMAIL_HOST_USER
+    #     to_list = [save_it.email, settings.EMAIL_HOST_USER]
+    #
+    #     send_mail(subject, message, from_email, to_list, fail_silently=True)
+    #     messages.success(request, 'Thank you for your order. We will be in touch')
+    #     return HttpResponseRedirect('/thank-you/')
+    # return render(request, template_name, context)
 

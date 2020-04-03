@@ -2,81 +2,53 @@
 {% load static %}
 {% load humanize %}
 {% block body %}
-    <!--Profile Data's --->
 
-    <section class="ex-collection section-padding bg-light-theme">
-        <div class="container">
-
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="product-box mb-xl-20">
-                        {% include 'spotlocator/logo_details.html' %}
-                    </div>
-                </div>
-                <div class="col-md-8">
-                          <div class="table-responsive-lg">
-                              <table class="table table-striped">
-                                <thead class="thead-dark">
-                                  <tr>
-                                      <th><strong>Order Name</strong></th>
-                                      <th><strong>Order Price</strong></th>
-                                      <th><strong>Ingredients Included</strong></th>
-                                      <th><strong>Ingredients Excluded</strong></th>
-                                      <th><strong>Order Pics</strong></th>
-                                      <th><strong>Remove Order</strong></th>
-                                  </tr>
-                                </thead>
-                          <!--closing of the head tag--->
-                                <tbody>
-                                {% if menus %}
-                                    {% for menu in menus %}
-                                          <tr class="table-light text-uppercase">
-                                              <td>{{ menu.order_name }}</td>
-                                              <td>&#8358;{{ menu.order_price|intcomma }}</td>
-                                              <td>{{ menu.content }}</td>
-                                              <td>{{ menu.excludes }}</td>
-                                              <td>{{ menu.order_upload.url}}</td>
-                                              <td><a href="{% url 'menu-delete' menu.id %}" type="submit" class="btn btn-danger">Delete</a></td>
-{#                                              <td>#}
-{#                                                  <form method="POST" action="{% url 'menu-delete' menu.id %}">#}
-{#                                                      {% csrf_token %}#}
-{#                                                        <input type="hidden" value="{{ menu.id }}" />#}
-{#                                                        <button type="submit" class="btn btn-danger btn-xs">#}
-{#                                                            <span class="glyphicon glyphicon-remove"></span>Delete#}
-{#                                                        </button>#}
-{#                                                  </form>#}
-{#                                              </td>#}
-
-                                          </tr>
-                                     {% endfor %}
-                                {% endif %}
-                                </tbody>
-                              </table>
-                           <div class="footer mt-5 mb-1" style="float: right;">
-                               <a href="{% url 'create-menu' %}" type="button" class="btn btn-primary" data-dismiss="modal">Add More</a>
-                               {# spot owners should be able to remove a particular menu... #}
-                           </div>
-                          </div>
-
-
-                </div>
-{#                <div class="col-md-2">#}
-{#                    <div class="card">#}
-{#                        <a href="#">#}
-{#                            <img src="{{ user.logo.url }}" class="img-fluid full-width" alt="product-img">#}
-{#                        </a>#}
-{#                        <div class="card-body">#}
-{#                            <p><strong><i>Dear customer, we value your satisfaction#}
-{#                            above others <b>CONNECT</b>with us today via <b>WHATSAPP</b>by clicking#}
-{#                            the giant button.</i></strong></p>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-            </div>
-        </div>
-    </section>
+  <div class="table-responsive-lg">
+      <table class="table table-striped">
+        <thead class="thead-dark">
+          <tr>
+              <th><strong>Order Name</strong></th>
+              <th><strong>Order Price</strong></th>
+              <th><strong>Ingredients Included</strong></th>
+              <th><strong>Ingredients Excluded</strong></th>
+              <th><strong>Order Pics</strong></th>
+              <th><strong>Remove Order</strong></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% if menus %}
+            {% for menu in menus %}
+                  <tr class="table-light text-uppercase">
+                      <td>{{ menu.order_name }}</td>
+                      <td>&#8358;{{ menu.order_price|intcomma }}</td>
+                      <td>{{ menu.content }}</td>
+                      <td>{{ menu.excludes }}</td>
+                      <td>{{ menu.order_upload.url}}</td>
+                      <td><a href="{% url 'delete_menu' menu.id %}" type="submit" class="btn btn-danger">Delete</a></td>
+                  </tr>
+             {% endfor %}
+        {% else %}
+            <tr><td colspan="7" class="text-center text-dark-white bg-light-white">No menu yet</td></tr>
+        {% endif %}
+        </tbody>
+      </table>
+   <div class="footer mt-5 mb-1" style="float: right;">
+       <a href="{% url 'create-menu' %}" type="button" class="btn btn-primary" data-dismiss="modal">Add Menu</a>
+       {# spot owners should be able to remove a particular menu... #}
+   </div>
+  </div>
 {% endblock %}
 
+
+{#<td>#}
+{#  <form method="POST" action="{% url 'delete_menu' menu.id %}">#}
+{#      {% csrf_token %}#}
+{#        <input type="hidden" name="menu_id" value="{{ menu.id }}" />#}
+{#        <button type="submit" class="btn btn-danger btn-xs">#}
+{#            <span class="glyphicon glyphicon-trash"></span>Delete#}
+{#        </button>#}
+{#  </form>#}
+{#</td>#}
 
 
 
